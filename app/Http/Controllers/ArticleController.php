@@ -115,7 +115,57 @@ class ArticleController extends Controller
 
     public function fetchNewsApiDataSource()
     {
-        $news_api_key = config('services.datasource.news_api');
-        dd($news_api_key);
+        $newsApiKey = config('services.datasource.news_api.key');
+        $newsApiUrl = config('services.datasource.news_api.url');
+    
+    
+        $fromDate = date('Y-m-d', strtotime('-1 day')); 
+        $toDate = date('Y-m-d'); 
+        
+        $apiUrl = $newsApiUrl."?q=apple&from={$fromDate}&to={$toDate}&apiKey={$newsApiKey}";
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'User-Agent: MyLaravelApp/1.0'
+        ]);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $newsData = json_decode($response, true);
+
+        return response()->json($newsData, 200);
+    }
+
+    public function fetchNewsApiDataSource1()
+    {
+        $newsApiKey = config('services.datasource.news_api.key');
+        $newsApiUrl = config('services.datasource.news_api.url');
+    
+    
+        $fromDate = date('Y-m-d', strtotime('-1 day')); 
+        $toDate = date('Y-m-d'); 
+        
+        $apiUrl = $newsApiUrl."?q=apple&from={$fromDate}&to={$toDate}&apiKey={$newsApiKey}";
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'User-Agent: MyLaravelApp/1.0'
+        ]);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $newsData = json_decode($response, true);
+
+        return response()->json($newsData, 200);
     }
 }

@@ -36,7 +36,10 @@ return [
     ],
 
     'datasource' => [
-        'news_api' => env('NEWS_API_KEY')
+        'news_api' =>[
+                'key' => env('NEWS_API_KEY'),
+                'url' => env('NEWS_API_URL'),
+        ] 
     ]
 
 ];
