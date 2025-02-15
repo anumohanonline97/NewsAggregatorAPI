@@ -35,4 +35,19 @@ return [
         ],
     ],
 
+    'datasource' => [
+        'newsApi' =>[
+                'key' => env('NEWS_API_KEY'),
+                'url' => env('NEWS_API_URL'),
+        ],
+        'nytApi' =>[
+                'key' => env('NYT_API_KEY'),
+                'url' => env('NYT_API_URL'),
+        ],
+        'guardApi' =>[
+                'key' => env('GUARD_API_KEY'),
+                'url' => env('GUARD_API_URL'),
+        ]
+    ]
+
 ];
