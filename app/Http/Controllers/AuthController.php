@@ -42,6 +42,17 @@ class AuthController extends Controller
     public function passwordreset(Request $request){
 
         $userId = auth()->id();
+
+        $validator = Validator::make($request->all(), [
+           'password' => 'required|string|min:6|confirmed', 
+           'password_confirmation' => 'required|string|same:password',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
     
         if (!$userId) {
             return response()->json(['message' => 'Unauthorized user.'], 401);
@@ -50,7 +61,7 @@ class AuthController extends Controller
         $user = User::find($userId);
 
         $user->password = Hash::make($request->password);
-        $confirmpassword = $request->confirmpassword;
+        $confirmpassword = $request->password_confirmation;
 
         if($request->password != $confirmpassword){
             return response()->json(['message' => 'Password mismatch!'],401);
@@ -66,11 +77,27 @@ class AuthController extends Controller
     public function signup(Request $request){
         $user = new User();
 
+        $validator = Validator::make($request->all(), [
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email',
+            'password' => 'required|string|min:6|confirmed', 
+            'password_confirmation' => 'required|string|same:password',
+            'phone' => 'required|digits_between:10,15', 
+            'address' => 'required|string|max:500',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
-        $confirmpassword = $request->confirmpassword;
+        $confirmpassword = $request->password_confirmation;
 
         if($request->password != $confirmpassword){
             return response()->json(['message' => 'Password mismatch!'],401);
