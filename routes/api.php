@@ -20,8 +20,10 @@ Route::middleware([EnsureFrontendRequestsAreStateful::class,'auth:sanctum'])->gr
     Route::put('/articles/{id}', [ArticleController::class, 'updateArticle']);
     Route::get('/articles/{id}', [ArticleController::class, 'getArticle']);
     Route::delete('/articles/{id}', [ArticleController::class, 'deleteArticle']);
-
+    
     Route::get('/newsdatasource', [ArticleController::class, 'fetchNewsApiDataSource']);
+    Route::get('/newyorktimes', [ArticleController::class, 'fetchNewsApiDataSource1']);
+    Route::get('/guardiandata', [ArticleController::class, 'fetchNewsApiDataSource2']);
 
     Route::post('/logout', [AuthController::class, 'logout']);
 });

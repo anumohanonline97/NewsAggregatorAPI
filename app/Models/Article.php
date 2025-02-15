@@ -9,10 +9,10 @@ class Article extends Model
     protected $fillable = [
         'title',
         'author',
+        'source',
         'description',
-        'content',
-        'publishedAt',
-        'address',
+        'url',
+        'published_at',
     ];
 
 }

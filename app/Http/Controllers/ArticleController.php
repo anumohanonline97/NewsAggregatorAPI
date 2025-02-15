@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 
 class ArticleController extends Controller
 {
@@ -14,8 +15,8 @@ class ArticleController extends Controller
             'author' => 'required|string',
             'source' => 'required|string',
             'description' => 'required|string',
-            'content' => 'required|string',
-            'publishedAt' => 'required|date', 
+            'url' => 'required|string',
+            'published_at' => 'required|date', 
         ]);
 
         if ($validator->fails()) {
@@ -30,8 +31,8 @@ class ArticleController extends Controller
         $article->author = $request->author;
         $article->source = $request->source;
         $article->description = $request->description;
-        $article->content = $request->content;
-        $article->publishedAt = $request->publishedAt;
+        $article->url = $request->url;
+        $article->published_at = $request->published_at;
     
         $article->save();
 
@@ -45,8 +46,8 @@ class ArticleController extends Controller
             'author' => 'required|string',
             'source' => 'required|string',
             'description' => 'required|string',
-            'content' => 'required|string',
-            'publishedAt' => 'required|date', 
+            'url' => 'required|string',
+            'published_at' => 'required|date', 
         ]);
 
         if ($validator->fails()) {
@@ -65,8 +66,8 @@ class ArticleController extends Controller
         $article->author = $request->author;
         $article->source = $request->source;
         $article->description = $request->description;
-        $article->content = $request->content;
-        $article->publishedAt = $request->publishedAt;
+        $article->url = $request->url;
+        $article->published_at = $request->published_at;
     
         $article->save();
 
@@ -115,9 +116,8 @@ class ArticleController extends Controller
 
     public function fetchNewsApiDataSource()
     {
-        $newsApiKey = config('services.datasource.news_api.key');
-        $newsApiUrl = config('services.datasource.news_api.url');
-    
+        $newsApiKey = config('services.datasource.newsApi.key');
+        $newsApiUrl = config('services.datasource.newsApi.url');
     
         $fromDate = date('Y-m-d', strtotime('-1 day')); 
         $toDate = date('Y-m-d'); 
@@ -138,19 +138,58 @@ class ArticleController extends Controller
 
         $newsData = json_decode($response, true);
 
-        return response()->json($newsData, 200);
+        if (isset($newsData['articles'])) {
+            foreach ($newsData['articles'] as $article) {
+                Article::updateOrCreate(
+                    ['url' => $article['url']], 
+                    [
+                        'title' => $article['title'],
+                        'author' => $article['author'] ?? 'Unknown',
+                        'description' => $article['description'],
+                        'url' => $article['url'],
+                        'source' => $article['source']['name'],
+                        'published_at' => Carbon::parse($article['publishedAt'])->format('Y-m-d H:i:s'),
+                    ]
+                );
+            }
+        }
+
+        return response()->json([
+            'message' => 'Article saved successfully',
+            'data' => $newsData
+        ], 201);
     }
 
     public function fetchNewsApiDataSource1()
     {
-        $newsApiKey = config('services.datasource.news_api.key');
-        $newsApiUrl = config('services.datasource.news_api.url');
-    
-    
-        $fromDate = date('Y-m-d', strtotime('-1 day')); 
-        $toDate = date('Y-m-d'); 
+        $nytApiKey = config('services.datasource.nytApi.key');
+        $nytApiUrl = config('services.datasource.nytApi.url');    
         
-        $apiUrl = $newsApiUrl."?q=apple&from={$fromDate}&to={$toDate}&apiKey={$newsApiKey}";
+        $apiUrl = $nytApiUrl."?api-key={$nytApiKey}";
+
+        $ch = curl_init();
+
+        curl_setopt($ch, CURLOPT_URL, $apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'User-Agent: MyLaravelApp/1.0'
+        ]);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+
+        $newsData = json_decode($response, true);
+
+        return response()->json($newsData, 200);
+    }
+
+    public function fetchNewsApiDataSource2()
+    {
+        $guardApiKey = config('services.datasource.guardApi.key');
+        $guardApiUrl = config('services.datasource.guardApi.url');    
+        
+        $apiUrl = $guardApiUrl."?api-key={$guardApiKey}";
 
         $ch = curl_init();
 
