@@ -21,6 +21,8 @@ Route::middleware([EnsureFrontendRequestsAreStateful::class,'auth:sanctum'])->gr
     Route::get('/articles/{id}', [ArticleController::class, 'getArticle']);
     Route::delete('/articles/{id}', [ArticleController::class, 'deleteArticle']);
 
+    Route::get('/newsdatasource', [ArticleController::class, 'fetchNewsApiDataSource']);
+
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 

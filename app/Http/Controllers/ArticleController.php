@@ -112,4 +112,10 @@ class ArticleController extends Controller
             'message' => 'Article deleted successfully!',
         ], 200);
     }
+
+    public function fetchNewsApiDataSource()
+    {
+        $news_api_key = config('services.datasource.news_api');
+        dd($news_api_key);
+    }
 }
