@@ -8,6 +8,51 @@ use Carbon\Carbon;
 
 class ArticleController extends Controller
 {
+    /**
+ * @OA\Post(
+ *     path="/api/articles",
+ *     summary="Save an Article",
+ *     description="Saves a new article to the database.",
+ *     tags={"Articles"},
+ *     security={{"bearerAuth":{}}}, 
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"title", "author", "source", "description", "url", "published_at"},
+ *             @OA\Property(property="title", type="string", example="Latest Tech Trends"),
+ *             @OA\Property(property="author", type="string", example="John Doe"),
+ *             @OA\Property(property="source", type="string", example="Tech News Daily"),
+ *             @OA\Property(property="description", type="string", example="An in-depth analysis of the latest trends in technology."),
+ *             @OA\Property(property="url", type="string", format="url", example="https://technewsdaily.com/latest-trends"),
+ *             @OA\Property(property="published_at", type="string", format="date-time", example="2024-02-15T10:00:00Z")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Article saved successfully!",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Article saved successfully!")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="errors", type="object", example={
+ *                 "title": {"The title field is required."}, 
+ *                 "published_at": {"The published_at field must be a valid date."}
+ *             })
+ *         )
+ *     )
+ * )
+ */
     public function saveArticle(Request $request){
 
         $validator = Validator::make($request->all(), [
@@ -38,6 +83,77 @@ class ArticleController extends Controller
 
         return response()->json(['message' => 'Article saved successfully!'],201);
     }
+
+    /**
+ * @OA\Put(
+ *     path="/api/articles/{id}",
+ *     summary="Update an Article",
+ *     description="Updates an existing article in the database.",
+ *     tags={"Articles"},
+ *     security={{"bearerAuth":{}}}, 
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID of the article to update",
+ *         @OA\Schema(type="integer", example=5)
+ *     ),
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"title", "author", "source", "description", "url", "published_at"},
+ *             @OA\Property(property="title", type="string", example="Updated Tech Trends"),
+ *             @OA\Property(property="author", type="string", example="Jane Doe"),
+ *             @OA\Property(property="source", type="string", example="Updated Source"),
+ *             @OA\Property(property="description", type="string", example="An updated description of tech trends."),
+ *             @OA\Property(property="url", type="string", format="url", example="https://updatedsource.com/updated-article"),
+ *             @OA\Property(property="published_at", type="string", format="date-time", example="2025-02-02T00:00:00Z")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Article updated successfully!",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Article updated successfully!"),
+ *             @OA\Property(property="articles", type="object",
+ *                 @OA\Property(property="id", type="integer", example=5),
+ *                 @OA\Property(property="title", type="string", example="update test"),
+ *                 @OA\Property(property="author", type="string", example="update author"),
+ *                 @OA\Property(property="source", type="string", example="update test"),
+ *                 @OA\Property(property="description", type="string", example="test update"),
+ *                 @OA\Property(property="content", type="string", example="test content update"),
+ *                 @OA\Property(property="published_at", type="string", format="date", example="2025-02-02"),
+ *                 @OA\Property(property="created_at", type="string", format="date-time", example="2025-02-15T07:14:02.000000Z"),
+ *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2025-02-15T08:02:58.000000Z")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Article not found",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Article not found")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="errors", type="object", example={
+ *                 "title": {"The title field is required."}, 
+ *                 "published_at": {"The published_at field must be a valid date."}
+ *             })
+ *         )
+ *     )
+ * )
+ */
 
     public function updateArticle(Request $request,$id){
 
@@ -77,6 +193,43 @@ class ArticleController extends Controller
             ],200);
     }
 
+    /**
+ * @OA\Get(
+ *     path="/api/articles",
+ *     summary="Get list of articles",
+ *     description="Retrieves all articles from the database.",
+ *     tags={"Articles"},
+ *     security={{"bearerAuth":{}}}, 
+ *     @OA\Response(
+ *         response=200,
+ *         description="Articles listed successfully!",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Articles listed successfully!"),
+ *             @OA\Property(property="articles", type="array",
+ *                 @OA\Items(
+ *                     @OA\Property(property="id", type="integer", example=1),
+ *                     @OA\Property(property="title", type="string", example="State Department had a plan to buy $400M worth of armored Tesla vehicles"),
+ *                     @OA\Property(property="author", type="string", example="mlive.com"),
+ *                     @OA\Property(property="source", type="string", example="Biztoc.com"),
+ *                     @OA\Property(property="description", type="string", example="By ADRIANA GOMEZ LICON Associated Press"),
+ *                     @OA\Property(property="content", type="string", example="Tesla's (TSLA) beat-up stock has found support on the charts, for now."),
+ *                     @OA\Property(property="published_at", type="string", format="date-time", nullable=true, example="2025-02-14T18:07:29.000000Z"),
+ *                     @OA\Property(property="created_at", type="string", format="date-time", example="2025-02-14T18:07:29.000000Z"),
+ *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2025-02-14T18:07:29.000000Z")
+ *                 )
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+ *         )
+ *     )
+ * )
+ */
+
     public function listArticles(){
         $articles = Article::all();
 
@@ -85,6 +238,55 @@ class ArticleController extends Controller
             'articles' => $articles
         ], 200);
     }
+
+    /**
+ * @OA\Get(
+ *     path="/api/articles/{id}",
+ *     summary="Get an article by ID",
+ *     description="Retrieves a single article by its ID.",
+ *     tags={"Articles"},
+ *     security={{"bearerAuth":{}}}, 
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID of the article to retrieve",
+ *         @OA\Schema(type="integer", example=3)
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Article retrieved successfully!",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Article retrieved successfully!"),
+ *             @OA\Property(property="articles", type="object",
+ *                 @OA\Property(property="id", type="integer", example=3),
+ *                 @OA\Property(property="title", type="string", example="test"),
+ *                 @OA\Property(property="author", type="string", example="test author"),
+ *                 @OA\Property(property="source", type="string", example="test source"),
+ *                 @OA\Property(property="description", type="string", example="test description"),
+ *                 @OA\Property(property="content", type="string", example="test content"),
+ *                 @OA\Property(property="publishedAt", type="string", format="date-time", example="2025-01-01 00:00:00"),
+ *                 @OA\Property(property="created_at", type="string", format="date-time", example="2025-02-15T06:55:36.000000Z"),
+ *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2025-02-15T06:55:36.000000Z")
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Article not found",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Article not found")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+ *         )
+ *     )
+ * )
+ */
 
     public function getArticle($id){
 
@@ -99,6 +301,44 @@ class ArticleController extends Controller
             'articles' => $article
         ], 200);
     }
+
+    /**
+ * @OA\Delete(
+ *     path="/api/articles/{id}",
+ *     summary="Delete an article by ID",
+ *     description="Deletes a specific article by its ID.",
+ *     tags={"Articles"},
+ *     security={{"bearerAuth":{}}}, 
+ *     @OA\Parameter(
+ *         name="id",
+ *         in="path",
+ *         required=true,
+ *         description="ID of the article to delete",
+ *         @OA\Schema(type="integer", example=3)
+ *     ),
+ *     @OA\Response(
+ *         response=200,
+ *         description="Article deleted successfully!",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Article deleted successfully!")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=404,
+ *         description="Article not found",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Article not found")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+ *         )
+ *     )
+ * )
+ */
 
     public function deleteArticle($id){
         $article = Article::find($id);
