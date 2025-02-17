@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Jobs\FetchArticles;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Article;
 use Illuminate\Http\Request;
@@ -446,5 +448,12 @@ class ArticleController extends Controller
         $newsData = json_decode($response, true);
 
         return response()->json($newsData, 200);
+    }
+
+    public function fetchArticles()
+    {
+        FetchArticles::dispatch();
+
+        return response()->json(['message' => 'Job has been dispatched!']);
     }
 }
