@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 use OpenApi\Annotations as OA;
 
 /**
@@ -136,7 +137,7 @@ class AuthController extends Controller
 
     public function passwordreset(Request $request){
 
-        $userId = auth()->id;
+        $userId = Auth::id();
 
         $validator = Validator::make($request->all(), [
            'password' => 'required|string|min:6|confirmed', 

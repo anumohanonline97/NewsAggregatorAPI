@@ -28,5 +28,8 @@ Route::middleware([EnsureFrontendRequestsAreStateful::class,'auth:sanctum'])->gr
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
+
+Route::get('/scheduler', [ArticleController::class, 'fetchArticles']);
+
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/signup', [AuthController::class, 'signup']);
