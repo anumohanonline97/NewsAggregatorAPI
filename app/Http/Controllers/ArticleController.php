@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Jobs\FetchArticles;
+use App\Jobs\FetchArticlesFromGuardian;
+use App\Jobs\FetchArticlesFromNewsAPI;
+use App\Jobs\FetchArticlesFromNYT;
 use Illuminate\Support\Facades\Validator;
 use App\Models\Article;
 use Illuminate\Http\Request;
@@ -232,14 +235,33 @@ class ArticleController extends Controller
  * )
  */
 
-    public function listArticles(){
-        $articles = Article::all();
-
-        return response()->json([
-            'message' => 'Articles listed successfully!',
-            'articles' => $articles
-        ], 200);
-    }
+ public function listArticles()
+ {
+     $search = request()->query('search', null);
+     $date = request()->query('date', null);
+     $perPage = request()->query('per_page', 10);
+ 
+     $query = Article::query();
+ 
+     if (!empty($search)) {
+         $query->where(function ($q) use ($search) {
+             $q->where('title', 'like', "%{$search}%")
+               ->orWhere('description', 'like', "%{$search}%");
+         });
+     }
+ 
+     if (!empty($date)) {
+         $query->whereDate('published_at', $date);
+     }
+ 
+     $articles = $query->paginate($perPage);
+ 
+     return response()->json([
+         'message' => 'Articles listed successfully!',
+         'articles' => $articles
+     ], 200);
+ }
+ 
 
     /**
  * @OA\Get(
@@ -452,7 +474,10 @@ class ArticleController extends Controller
 
     public function fetchArticles()
     {
-        FetchArticles::dispatch();
+        FetchArticlesFromNewsAPI::dispatch();
+        FetchArticlesFromNYT::dispatch();
+        FetchArticlesFromGuardian::dispatch();
+
 
         return response()->json(['message' => 'Job has been dispatched!']);
     }
