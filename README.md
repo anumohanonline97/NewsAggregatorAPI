@@ -17,20 +17,9 @@ Ensure you have the following installed:
 ## 📂 Project Setup
 
 ### Clone the Repository
-```sh
-git clone git@github.com:anumohanonline97/NewsAggregatorAPI.git
-cd NewsAggregatorAPI
 
-### Install composer so that we can include packages in our project using composer.
-
-composer install
-composer update
-composer dump-autoload --optimize
-
-
-###  Configure Environment Variables
-
-#Update .env with correct database values.
+    git clone git@github.com:anumohanonline97/NewsAggregatorAPI.git
+    cd NewsAggregatorAPI
 
 ### Build and Start Docker Containers
 
@@ -44,58 +33,54 @@ composer dump-autoload --optimize
 #Start the database, PHP, and Nginx services
 #Run the Laravel application in a container
 
+###  Configure Environment Variables
+
+#Update .env with correct database values.
+
+### Install composer so that we can include all packages in our project using composer.
+
+    composer install
+    composer dump-autoload --optimize
+
 ### Run Migrations and Seeders
 
-# Once the containers are running, run:
+### Once the containers are running, run:
+    #Run laravel
+    docker exec -it news_app php artisan serve
 
-    docker exec -it news_app php artisan migrate --seed
+    #Rollback and migrate all migrations and seeders
+    docker exec -it news_app php artisan migrate:fresh --seed
 
 ### Access the Application
 
-News Aggregator API App → http://localhost:8082
-phpMyAdmin → http://localhost:8081
+    News Aggregator API App → http://localhost:8082
+    phpMyAdmin → http://localhost:8081
+
+
+
+###  I have implemented Laravel scheduled commands to regularly fetch and update articles from the chosen news APIs
+
+### After running the artisan command please run the queue starting commands.
+
+       php artisan queue:restart # Run if needed to restart the queue.
+       php artisan queue:work
+
+### After running this please hit the API below to  fetch and store articles in the local database.
+
+     http://localhost:8082/api/scheduler
 
 
 ### Stopping and Restarting Docker
 
-#To stop the containers:
+    #To stop the containers:
 
-docker-compose down
+    docker-compose down
 
-#To restart the containers:
+    #To restart the containers:
 
-docker-compose up 
+    docker-compose up 
 
 ###
-
-📌 API Documentation
-
-        ### Swagger UI
-        #The API is documented using Swagger (OpenAPI). You can view the API documentation in your browser.
-
-        ### 📖 Access Swagger Docs:
-                http://localhost:8082/api/documentation (for local development)
-
-        ### Generating Swagger Documentation
-        # If you have integrated Laravel OpenAPI (Swagger), you may need to generate or update the documentation.
-
-        ### Run the following command inside the news_app container:
-
-        docker exec -it news_app php artisan l5-swagger:generate
-
-        ### After running this command, the documentation should be available at /api/documentation.
-
-    ### Using Postman
-        #If you prefer Postman, you can import the API collection using the following steps:
-
-        ###Open Postman.
-                Click Import > Select Link.
-        ###Paste:
-                    http://localhost:8082/api/documentation (for local development)
-
-        ###Then 
-                Click Continue > Import.
-
 
 ### I have done the project at first using the xampp server because while running docker, my system takes more execution time to run the APIs.
 ### But after running the APIs I installed docker and all the configurations are done and all functionalities are working fine.
@@ -107,16 +92,36 @@ docker-compose up
     # New York Times
     # NewsAPI.org
 
-###  I have implemented Laravel scheduled commands to regularly fetch and update articles from the chosen news APIs
+📌 API Documentation
 
-    #After running the artisan command please run the queue starting commands.
+### Swagger UI
+        #The API is documented using Swagger (OpenAPI). You can view the API documentation in your browser.
 
-       php artisan queue:restart # Run if needed to restart the queue.
-       php artisan queue:work
+### 📖 Access Swagger Docs:
+                http://localhost:8082/api/documentation (for local development)
 
-### After running this please hit the API below to  fetch and store articles in the local database.
+### Generating Swagger Documentation
+        # If you have integrated Laravel OpenAPI (Swagger), you may need to generate or update the documentation.
 
-     http://localhost:8082/api/scheduler
+### Run the following command to enter into the news_app container:
+
+        docker exec -it news_app php artisan l5-swagger:generate
+        
+
+### After running this command, the documentation should be available at /api/documentation.
+
+### Using Postman
+        #If you prefer Postman, you can import the API collection using the following steps:
+
+### Open Postman.
+                Click Import > Select Link.
+### Paste:
+                http://localhost:8082/api/documentation (for local development)
+
+### Then 
+                Click Continue > Import.
+
+
 
 
 
