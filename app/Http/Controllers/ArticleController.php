@@ -378,99 +378,99 @@ class ArticleController extends Controller
         ], 200);
     }
 
-    public function fetchNewsApiDataSource()
-    {
-        $newsApiKey = config('services.datasource.newsApi.key');
-        $newsApiUrl = config('services.datasource.newsApi.url');
+    // public function fetchNewsApiDataSource()
+    // {
+    //     $newsApiKey = config('services.datasource.newsApi.key');
+    //     $newsApiUrl = config('services.datasource.newsApi.url');
     
-        $fromDate = date('Y-m-d', strtotime('-1 day')); 
-        $toDate = date('Y-m-d'); 
+    //     $fromDate = date('Y-m-d', strtotime('-1 day')); 
+    //     $toDate = date('Y-m-d'); 
         
-        $apiUrl = $newsApiUrl."?q=apple&from={$fromDate}&to={$toDate}&apiKey={$newsApiKey}";
+    //     $apiUrl = $newsApiUrl."?q=apple&from={$fromDate}&to={$toDate}&apiKey={$newsApiKey}";
 
-        $ch = curl_init();
+    //     $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $apiUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'User-Agent: MyLaravelApp/1.0'
-        ]);
+    //     curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    //     curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    //         'User-Agent: MyLaravelApp/1.0'
+    //     ]);
 
-        $response = curl_exec($ch);
-        curl_close($ch);
+    //     $response = curl_exec($ch);
+    //     curl_close($ch);
 
-        $newsData = json_decode($response, true);
+    //     $newsData = json_decode($response, true);
 
-        if (isset($newsData['articles'])) {
-            foreach ($newsData['articles'] as $article) {
-                Article::updateOrCreate(
-                    ['url' => $article['url']], 
-                    [
-                        'title' => $article['title'],
-                        'author' => $article['author'] ?? 'Unknown',
-                        'description' => $article['description'],
-                        'url' => $article['url'],
-                        'source' => $article['source']['name'],
-                        'published_at' => Carbon::parse($article['publishedAt'])->format('Y-m-d H:i:s'),
-                    ]
-                );
-            }
-        }
+    //     if (isset($newsData['articles'])) {
+    //         foreach ($newsData['articles'] as $article) {
+    //             Article::updateOrCreate(
+    //                 ['url' => $article['url']], 
+    //                 [
+    //                     'title' => $article['title'],
+    //                     'author' => $article['author'] ?? 'Unknown',
+    //                     'description' => $article['description'],
+    //                     'url' => $article['url'],
+    //                     'source' => $article['source']['name'],
+    //                     'published_at' => Carbon::parse($article['publishedAt'])->format('Y-m-d H:i:s'),
+    //                 ]
+    //             );
+    //         }
+    //     }
 
-        return response()->json([
-            'message' => 'Article saved successfully',
-            'data' => $newsData
-        ], 201);
-    }
+    //     return response()->json([
+    //         'message' => 'Article saved successfully',
+    //         'data' => $newsData
+    //     ], 201);
+    // }
 
-    public function fetchNewsApiDataSource1()
-    {
-        $nytApiKey = config('services.datasource.nytApi.key');
-        $nytApiUrl = config('services.datasource.nytApi.url');    
+    // public function fetchNewsApiDataSource1()
+    // {
+    //     $nytApiKey = config('services.datasource.nytApi.key');
+    //     $nytApiUrl = config('services.datasource.nytApi.url');    
         
-        $apiUrl = $nytApiUrl."?api-key={$nytApiKey}";
+    //     $apiUrl = $nytApiUrl."?api-key={$nytApiKey}";
 
-        $ch = curl_init();
+    //     $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $apiUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'User-Agent: MyLaravelApp/1.0'
-        ]);
+    //     curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    //     curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    //         'User-Agent: MyLaravelApp/1.0'
+    //     ]);
 
-        $response = curl_exec($ch);
-        curl_close($ch);
+    //     $response = curl_exec($ch);
+    //     curl_close($ch);
 
-        $newsData = json_decode($response, true);
+    //     $newsData = json_decode($response, true);
 
-        return response()->json($newsData, 200);
-    }
+    //     return response()->json($newsData, 200);
+    // }
 
-    public function fetchNewsApiDataSource2()
-    {
-        $guardApiKey = config('services.datasource.guardApi.key');
-        $guardApiUrl = config('services.datasource.guardApi.url');    
+    // public function fetchNewsApiDataSource2()
+    // {
+    //     $guardApiKey = config('services.datasource.guardApi.key');
+    //     $guardApiUrl = config('services.datasource.guardApi.url');    
         
-        $apiUrl = $guardApiUrl."?api-key={$guardApiKey}";
+    //     $apiUrl = $guardApiUrl."?api-key={$guardApiKey}";
 
-        $ch = curl_init();
+    //     $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $apiUrl);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
-            'User-Agent: MyLaravelApp/1.0'
-        ]);
+    //     curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    //     curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    //         'User-Agent: MyLaravelApp/1.0'
+    //     ]);
 
-        $response = curl_exec($ch);
-        curl_close($ch);
+    //     $response = curl_exec($ch);
+    //     curl_close($ch);
 
-        $newsData = json_decode($response, true);
+    //     $newsData = json_decode($response, true);
 
-        return response()->json($newsData, 200);
-    }
+    //     return response()->json($newsData, 200);
+    // }
 
     public function fetchArticles()
     {
