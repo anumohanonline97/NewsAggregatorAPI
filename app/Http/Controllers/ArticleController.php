@@ -527,4 +527,25 @@ class ArticleController extends Controller
 
         return response()->json(['message' => 'Job has been dispatched!']);
     }
+
+    public function getDistinctCategoriesSourcesAuthors()
+    {
+        $categories = Article::select('category')
+                            ->distinct()
+                            ->pluck('category');
+
+        $sources = Article::select('source')
+                        ->distinct()
+                        ->pluck('source');
+
+        $authors = Article::select('author')
+                        ->distinct()
+                        ->pluck('author');
+
+        return response()->json([
+            'categories' => $categories,
+            'sources' => $sources,
+            'authors' => $authors
+        ], 200);
+    }
 }

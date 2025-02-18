@@ -4,9 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\UserpreferenceController;
 
-
-Route::middleware(['throttle:2,1'])->group(function () {
+Route::middleware(['throttle:10,1'])->group(function () {
 Route::middleware([EnsureFrontendRequestsAreStateful::class,'auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
@@ -18,6 +18,11 @@ Route::middleware([EnsureFrontendRequestsAreStateful::class,'auth:sanctum'])->gr
     Route::put('/articles/{id}', [ArticleController::class, 'updateArticle']);
     Route::get('/articles/{id}', [ArticleController::class, 'getArticle']);
     Route::delete('/articles/{id}', [ArticleController::class, 'deleteArticle']);
+
+    Route::get('/getpreferencesfields', [ArticleController::class, 'getDistinctCategoriesSourcesAuthors']);
+    Route::post('/saveuserpreferences', [UserpreferenceController::class, 'saveUserPreference']);
+    Route::get('/getuserpreferencesnews', [UserpreferenceController::class, 'getUserPreferenceNews']);
+
     
     Route::get('/newsdatasource', [ArticleController::class, 'fetchNewsApiDataSource']);
     Route::get('/newyorktimes', [ArticleController::class, 'fetchNewsApiDataSource1']);
