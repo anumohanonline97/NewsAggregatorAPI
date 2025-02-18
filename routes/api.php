@@ -6,7 +6,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArticleController;
 
 
-
 Route::middleware(['throttle:2,1'])->group(function () {
 Route::middleware([EnsureFrontendRequestsAreStateful::class,'auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {

@@ -21,6 +21,13 @@ Ensure you have the following installed:
 git clone git@github.com:anumohanonline97/NewsAggregatorAPI.git
 cd NewsAggregatorAPI
 
+### Install composer so that we can include packages in our project using composer.
+
+composer install
+composer update
+composer dump-autoload --optimize
+
+
 ###  Configure Environment Variables
 
 #Update .env with correct database values.

@@ -197,48 +197,90 @@ class ArticleController extends Controller
             'articles' => $article
             ],200);
     }
-
-    /**
- * @OA\Get(
- *     path="/api/articles",
- *     summary="Get list of articles",
- *     description="Retrieves all articles from the database.",
- *     tags={"Articles"},
- *     security={{"bearerAuth":{}}}, 
- *     @OA\Response(
- *         response=200,
- *         description="Articles listed successfully!",
- *         @OA\JsonContent(
- *             @OA\Property(property="message", type="string", example="Articles listed successfully!"),
- *             @OA\Property(property="articles", type="array",
- *                 @OA\Items(
- *                     @OA\Property(property="id", type="integer", example=1),
- *                     @OA\Property(property="title", type="string", example="State Department had a plan to buy $400M worth of armored Tesla vehicles"),
- *                     @OA\Property(property="author", type="string", example="mlive.com"),
- *                     @OA\Property(property="source", type="string", example="Biztoc.com"),
- *                     @OA\Property(property="description", type="string", example="By ADRIANA GOMEZ LICON Associated Press"),
- *                     @OA\Property(property="content", type="string", example="Tesla's (TSLA) beat-up stock has found support on the charts, for now."),
- *                     @OA\Property(property="published_at", type="string", format="date-time", nullable=true, example="2025-02-14T18:07:29.000000Z"),
- *                     @OA\Property(property="created_at", type="string", format="date-time", example="2025-02-14T18:07:29.000000Z"),
- *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2025-02-14T18:07:29.000000Z")
- *                 )
- *             )
- *         )
- *     ),
- *     @OA\Response(
- *         response=401,
- *         description="Unauthorized",
- *         @OA\JsonContent(
- *             @OA\Property(property="message", type="string", example="Unauthenticated.")
- *         )
- *     )
- * )
- */
-
+/**
+     * @OA\Get(
+     *     path="/api/articles",
+     *     summary="Get list of articles",
+     *     description="Fetches a list of articles with optional filters for search, date, and source.",
+     *     tags={"Articles"},
+     *     security={{
+     *         "sanctum": {}
+     *     }},
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Search term to filter articles by title or description",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="date",
+     *         in="query",
+     *         description="Date to filter articles by publication date",
+     *         required=false,
+     *         @OA\Schema(type="string", format="date")
+     *     ),
+     *     @OA\Parameter(
+     *         name="source",
+     *         in="query",
+     *         description="Filter articles by source",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Number of articles per page",
+     *         required=false,
+     *         @OA\Schema(type="integer", default=10)
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of articles",
+     *         @OA\JsonContent(
+     *             type="object",
+     *             @OA\Property(property="message", type="string", example="Articles listed successfully!"),
+     *             @OA\Property(
+     *                 property="articles",
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer"),
+     *                 @OA\Property(property="data", type="array", @OA\Items(
+     *                     type="object",
+     *                     @OA\Property(property="id", type="integer"),
+     *                     @OA\Property(property="title", type="string"),
+     *                     @OA\Property(property="author", type="string"),
+     *                     @OA\Property(property="source", type="string"),
+     *                     @OA\Property(property="category", type="string"),
+     *                     @OA\Property(property="description", type="string"),
+     *                     @OA\Property(property="url", type="string"),
+     *                     @OA\Property(property="published_at", type="string", format="date-time"),
+     *                     @OA\Property(property="created_at", type="string", format="date-time"),
+     *                     @OA\Property(property="updated_at", type="string", format="date-time")
+     *                 )),
+     *                 @OA\Property(property="first_page_url", type="string"),
+     *                 @OA\Property(property="last_page_url", type="string"),
+     *                 @OA\Property(property="next_page_url", type="string"),
+     *                 @OA\Property(property="prev_page_url", type="string"),
+     *                 @OA\Property(property="per_page", type="integer"),
+     *                 @OA\Property(property="total", type="integer")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request"
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Internal Server Error"
+     *     )
+     * )
+     */
  public function listArticles()
  {
      $search = request()->query('search', null);
      $date = request()->query('date', null);
+     $source = request()->query('source', null);
      $perPage = request()->query('per_page', 10);
  
      $query = Article::query();
@@ -248,6 +290,10 @@ class ArticleController extends Controller
              $q->where('title', 'like', "%{$search}%")
                ->orWhere('description', 'like', "%{$search}%");
          });
+     }
+     
+     if (!empty($source)) {
+        $query->whereDate('source', 'like', "%{$source}%");
      }
  
      if (!empty($date)) {

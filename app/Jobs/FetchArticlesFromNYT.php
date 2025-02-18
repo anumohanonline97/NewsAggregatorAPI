@@ -64,6 +64,7 @@ class FetchArticlesFromNYT implements ShouldQueue
                         'description' => $article['abstract'],
                         'url' => $article['url'],
                         'source' => 'New York Times',
+                        'category' => $article['section'] ?? 'Uncategorized', 
                         'published_at' => isset($article['published_date']) ? Carbon::parse($article['published_date'])->format('Y-m-d H:i:s') : null,
                     ]
                 );

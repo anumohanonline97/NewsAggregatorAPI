@@ -67,6 +67,7 @@ class FetchArticlesFromGuardian implements ShouldQueue
                         'description' => $article['fields']['trailText'] ?? 'No description',
                         'url' => $article['webUrl'],
                         'source' => 'The Guardian',
+                        'category' => $article['sectionName'] ?? 'General', 
                         'published_at' => isset($article['webPublicationDate']) ? Carbon::parse($article['webPublicationDate'])->format('Y-m-d H:i:s') : null,
                     ]
                 );

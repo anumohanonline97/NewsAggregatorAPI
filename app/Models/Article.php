@@ -10,6 +10,7 @@ class Article extends Model
         'title',
         'author',
         'source',
+        'category',
         'description',
         'url',
         'published_at',

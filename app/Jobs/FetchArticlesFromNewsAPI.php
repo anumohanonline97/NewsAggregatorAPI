@@ -12,17 +12,6 @@ class FetchArticlesFromNewsAPI implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct()
-    {
-        //
-    }
-
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
         $this->fetchArticlesFromNewsAPI();
@@ -45,33 +34,35 @@ class FetchArticlesFromNewsAPI implements ShouldQueue
         return $response ? json_decode($response, true) : [];
     }
 
-    /**
-     * Fetch articles from NewsAPI.org.
-     */
     private function fetchArticlesFromNewsAPI()
     {
         $newsApiKey = config('services.datasource.newsApi.key');
-        $newsApiUrl = config('services.datasource.newsApi.url');
+        $newsApiUrl = "https://newsapi.org/v2/top-headlines"; 
         $fromDate = date('Y-m-d', strtotime('-1 day'));
-        $toDate = date('Y-m-d', strtotime('-1 day'));
 
-        $apiUrl = "{$newsApiUrl}?q=apple&from={$fromDate}&to={$toDate}&apiKey={$newsApiKey}";
+        // Define categories supported by NewsAPI
+        $categories = ['business', 'entertainment', 'general', 'health', 'science', 'sports', 'technology'];
 
-        $newsData = $this->fetchApiData($apiUrl);
+        foreach ($categories as $category) {
+            $apiUrl = "{$newsApiUrl}?category={$category}&from={$fromDate}&apiKey={$newsApiKey}";
 
-        if (isset($newsData['articles'])) {
-            foreach ($newsData['articles'] as $article) {
-                Article::updateOrCreate(
-                    ['url' => $article['url']],
-                    [
-                        'title' => $article['title'],
-                        'author' => $article['author'] ?? 'Unknown',
-                        'description' => $article['description'],
-                        'url' => $article['url'],
-                        'source' => $article['source']['name'],
-                        'published_at' => Carbon::parse($article['publishedAt'])->format('Y-m-d H:i:s'),
-                    ]
-                );
+            $newsData = $this->fetchApiData($apiUrl);
+
+            if (isset($newsData['articles'])) {
+                foreach ($newsData['articles'] as $article) {
+                    Article::updateOrCreate(
+                        ['url' => $article['url']],
+                        [
+                            'title' => $article['title'],
+                            'author' => $article['author'] ?? 'Unknown',
+                            'description' => $article['description'],
+                            'url' => $article['url'],
+                            'source' => $article['source']['name'],
+                            'published_at' => Carbon::parse($article['publishedAt'])->format('Y-m-d H:i:s'),
+                            'category' => $category, 
+                        ]
+                    );
+                }
             }
         }
     }
