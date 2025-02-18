@@ -66,6 +66,8 @@ docker-compose down
 
 docker-compose up 
 
+###
+
 📌 API Documentation
 
         ### Swagger UI
@@ -73,7 +75,6 @@ docker-compose up
 
         ### 📖 Access Swagger Docs:
                 http://localhost:8082/api/documentation (for local development)
-                https://your-live-api.com/api/documentation (for production, if hosted)
 
         ### Generating Swagger Documentation
         # If you have integrated Laravel OpenAPI (Swagger), you may need to generate or update the documentation.
@@ -91,7 +92,6 @@ docker-compose up
                 Click Import > Select Link.
         ###Paste:
                     http://localhost:8082/api/documentation (for local development)
-                    https://your-live-api.com/api/documentation (for production, if hosted)
 
         ###Then 
                 Click Continue > Import.
