@@ -1,66 +1,130 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# News Aggregator API with Docker 
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a Laravel 11 project running inside a Docker environment with MySQL, Nginx, and Redis.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Prerequisites
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Ensure you have the following installed:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Git](https://git-scm.com/)
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 📂 Project Setup
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Clone the Repository
+```sh
+git clone git@github.com:anumohanonline97/NewsAggregatorAPI.git
+cd NewsAggregatorAPI
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Install composer so that we can include packages in our project using composer.
 
-## Laravel Sponsors
+composer install
+composer update
+composer dump-autoload --optimize
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### Premium Partners
+###  Configure Environment Variables
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+#Update .env with correct database values.
 
-## Contributing
+### Build and Start Docker Containers
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    #Run the following command:
 
-## Code of Conduct
+    docker-compose up --build 
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#This will:
 
-## Security Vulnerabilities
+#Build the application container
+#Start the database, PHP, and Nginx services
+#Run the Laravel application in a container
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Run Migrations and Seeders
 
-## License
+# Once the containers are running, run:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    docker exec -it news_app php artisan migrate --seed
+
+### Access the Application
+
+News Aggregator API App → http://localhost:8082
+phpMyAdmin → http://localhost:8081
+
+
+### Stopping and Restarting Docker
+
+#To stop the containers:
+
+docker-compose down
+
+#To restart the containers:
+
+docker-compose up 
+
+###
+
+📌 API Documentation
+
+        ### Swagger UI
+        #The API is documented using Swagger (OpenAPI). You can view the API documentation in your browser.
+
+        ### 📖 Access Swagger Docs:
+                http://localhost:8082/api/documentation (for local development)
+
+        ### Generating Swagger Documentation
+        # If you have integrated Laravel OpenAPI (Swagger), you may need to generate or update the documentation.
+
+        ### Run the following command inside the news_app container:
+
+        docker exec -it news_app php artisan l5-swagger:generate
+
+        ### After running this command, the documentation should be available at /api/documentation.
+
+    ### Using Postman
+        #If you prefer Postman, you can import the API collection using the following steps:
+
+        ###Open Postman.
+                Click Import > Select Link.
+        ###Paste:
+                    http://localhost:8082/api/documentation (for local development)
+
+        ###Then 
+                Click Continue > Import.
+
+
+### I have done the project at first using the xampp server because while running docker, my system takes more execution time to run the APIs.
+### But after running the APIs I installed docker and all the configurations are done and all functionalities are working fine.
+
+### If any issues are facing like 403 forbidden or 504 gateway time out while running docker in your system, make sure your ngnix.conf file is pointing to the public folder of the project folder.
+
+### I have chosen 3 Data Sources among the sources you have provided.It is listed below:
+    # The Guardian
+    # New York Times
+    # NewsAPI.org
+
+###  I have implemented Laravel scheduled commands to regularly fetch and update articles from the chosen news APIs
+
+    #After running the artisan command please run the queue starting commands.
+
+       php artisan queue:restart # Run if needed to restart the queue.
+       php artisan queue:work
+
+### After running this please hit the API below to  fetch and store articles in the local database.
+
+     http://localhost:8082/api/scheduler
+
+
+
+
+
+
+
+
+
+
+

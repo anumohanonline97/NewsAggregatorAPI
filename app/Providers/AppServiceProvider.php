@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Console\TaskScheduler;
 use Illuminate\Support\ServiceProvider;
 
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
