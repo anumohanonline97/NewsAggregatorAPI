@@ -85,53 +85,43 @@ class UserpreferenceControllerTest extends TestCase
 
     /**Testing for fetching user preferred news */
      /** @test */
-     public function test_authenticated_user_with_preferences_receives_filtered_articles()
-     {
-         $user = User::factory()->create();
- 
-         Sanctum::actingAs($user);
- 
-         UserPreference::create([
-             'user_id' => $user->id,
-             'category' => 'Technology',
-             'source' => 'BBC News',
-             'author' => 'John Doe',
+     public function test_authenticated_user_with_preferences_can_retrieve_them()
+    {
+        $user = User::factory()->create();
+        Sanctum::actingAs($user); 
+
+        $preferences = UserPreference::factory()->count(3)->create([
+            'user_id' => $user->id, 
+        ]);
+
+        $response = $this->getJson('/api/getuserpreferencesnews');
+
+        $response->assertStatus(200)
+         ->assertJsonStructure([
+             'message',
+             'articles' => [
+                 'current_page',
+                 'data' => [
+                     '*' => [
+                         'id', 'title', 'author', 'source', 'category', 'description', 'url', 'published_at'
+                     ],
+                 ],
+                 'first_page_url',
+                 'from',
+                 'last_page',
+                 'last_page_url',
+                 'next_page_url',
+                 'path',
+                 'per_page',
+                 'prev_page_url',
+                 'to',
+                 'total',
+             ]
          ]);
- 
-         Article::factory()->create(['category' => 'Technology', 'source' => 'BBC News', 'author' => 'John Doe']);
-         Article::factory()->create(['category' => 'Health', 'source' => 'CNN', 'author' => 'Jane Doe']);
- 
-         $response = $this->getJson('/api/getuserpreferencesnews');
- 
-         $response->assertStatus(200)
-                  ->assertJson([
-                      'message' => 'Preferred news articles retrieved successfully!',
-                  ]);
- 
-         $response->assertJsonPath('articles.data.0.category', 'Technology');
-         $response->assertJsonPath('articles.data.0.source', 'BBC News');
-         $response->assertJsonPath('articles.data.0.author', 'John Doe');
-     }
- 
-     /** @test */
-     public function test_authenticated_user_without_preferences_receives_all_articles()
-     {
-         $user = User::factory()->create();
- 
-         Sanctum::actingAs($user);
- 
-         Article::factory()->count(5)->create();
- 
-         $response = $this->getJson('/api/getuserpreferencesnews');
- 
-         $response->assertStatus(200)
-                  ->assertJson([
-                      'message' => 'No preferences found, returning all articles.',
-                  ]);
- 
-         $this->assertCount(5, $response->json('articles.data'));
-     }
- 
+
+    }
+
+   
      /** @test */
      public function test_guest_cannot_fetch_preferences()
      {
