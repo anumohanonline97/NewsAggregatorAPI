@@ -134,20 +134,21 @@ class AuthControllerTest extends TestCase
      * Test that user cannot sign up if passwords do not match
      */
     public function test_api_user_cannot_signup_with_mismatched_passwords()
-    {
-        $response = $this->postJson('/api/signup', [
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'email' => 'johndoe@example.com',
-            'password' => 'test1234',
-            'password_confirmation' => 'wrongpassword', 
-            'phone' => '1234567890',
-            'address' => '123 Street, City, Country'
-        ]);
+{
+    $response = $this->postJson('/api/signup', [
+        'first_name' => 'John',
+        'last_name' => 'Doe',
+        'email' => 'johndoe@example.com',
+        'password' => 'test1234',
+        'password_confirmation' => 'wrongpassword', 
+        'phone' => '1234567890',
+        'address' => '123 Street, City, Country'
+    ]);
 
-        $response->assertStatus(401)
-                 ->assertJson(['message' => 'Password mismatch!']);
-    }
+    $response->assertStatus(422) 
+             ->assertJsonStructure(['errors' => ['password']]); 
+}
+
 
     /**
      * Test that user cannot sign up with an already existing email
@@ -156,22 +157,23 @@ class AuthControllerTest extends TestCase
     {
         User::factory()->create([
             'email' => 'existinguser@example.com',
-            'password' => bcrypt('password123')
         ]);
 
         $response = $this->postJson('/api/signup', [
             'first_name' => 'David',
             'last_name' => 'Doe',
-            'email' => 'david@example.com',
+            'email' => 'existinguser@example.com', 
             'password' => 'test1234',
             'password_confirmation' => 'test1234',
             'phone' => '1234567890',
             'address' => '123 Street, City, Country'
         ]);
 
-        $response->assertStatus(422) 
-                 ->assertJsonStructure(['errors']);
+        $response->assertStatus(422)
+                ->assertJsonValidationErrors(['email']);
     }
+    
+    
 
      /**
      * Test that an authenticated user can successfully log out

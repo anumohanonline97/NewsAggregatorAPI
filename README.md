@@ -46,10 +46,17 @@ Ensure you have the following installed:
 
 ### Once the containers are running, run:
     #Run laravel
-    docker exec -it news_app php artisan serve
+
+        docker exec -it news_app php artisan serve
 
     #Rollback and migrate all migrations and seeders
-    docker exec -it news_app php artisan migrate:fresh --seed
+
+        docker exec -it news_app php artisan migrate:fresh --seed
+
+    #Test all the APIs routes by running the test commands
+
+        docker exec -it news_app php artisan test
+
 
 ### Access the Application
 
