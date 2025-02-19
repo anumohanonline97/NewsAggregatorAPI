@@ -3,11 +3,18 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class UserPreference extends Model
 {
-    protected $fillable = ['category', 
+    use HasApiTokens,HasFactory, Notifiable;
+
+    protected $fillable = [
+                           'category', 
                            'source', 
-                           'author'];
+                           'author'
+                        ];
 
 }

@@ -17,12 +17,61 @@
                 "tags": [
                     "Articles"
                 ],
-                "summary": "Get list of articles",
-                "description": "Retrieves all articles from the database.",
+                "summary": "List articles",
+                "description": "Retrieve a paginated list of articles with optional filters",
                 "operationId": "888ccf414fd7a51ecfa65b2e90d59c2a",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search keyword for title or description",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "Filter articles by published date (YYYY-MM-DD)",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    },
+                    {
+                        "name": "source",
+                        "in": "query",
+                        "description": "Filter articles by source",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "description": "Filter articles by category",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Number of articles per page (default: 10)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
-                        "description": "Articles listed successfully!",
+                        "description": "List of articles",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -32,68 +81,80 @@
                                             "example": "Articles listed successfully!"
                                         },
                                         "articles": {
-                                            "type": "array",
-                                            "items": {
-                                                "properties": {
-                                                    "id": {
-                                                        "type": "integer",
-                                                        "example": 1
-                                                    },
-                                                    "title": {
-                                                        "type": "string",
-                                                        "example": "State Department had a plan to buy $400M worth of armored Tesla vehicles"
-                                                    },
-                                                    "author": {
-                                                        "type": "string",
-                                                        "example": "mlive.com"
-                                                    },
-                                                    "source": {
-                                                        "type": "string",
-                                                        "example": "Biztoc.com"
-                                                    },
-                                                    "description": {
-                                                        "type": "string",
-                                                        "example": "By ADRIANA GOMEZ LICON Associated Press"
-                                                    },
-                                                    "content": {
-                                                        "type": "string",
-                                                        "example": "Tesla's (TSLA) beat-up stock has found support on the charts, for now."
-                                                    },
-                                                    "published_at": {
-                                                        "type": "string",
-                                                        "format": "date-time",
-                                                        "example": "2025-02-14T18:07:29.000000Z",
-                                                        "nullable": true
-                                                    },
-                                                    "created_at": {
-                                                        "type": "string",
-                                                        "format": "date-time",
-                                                        "example": "2025-02-14T18:07:29.000000Z"
-                                                    },
-                                                    "updated_at": {
-                                                        "type": "string",
-                                                        "format": "date-time",
-                                                        "example": "2025-02-14T18:07:29.000000Z"
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "Tesla stock finds support"
+                                                            },
+                                                            "author": {
+                                                                "type": "string",
+                                                                "example": "aol.com"
+                                                            },
+                                                            "source": {
+                                                                "type": "string",
+                                                                "example": "Biztoc.com"
+                                                            },
+                                                            "category": {
+                                                                "type": "string",
+                                                                "example": "business"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "Tesla's stock is rebounding after a tough stretch."
+                                                            },
+                                                            "url": {
+                                                                "type": "string",
+                                                                "example": "https://example.com"
+                                                            },
+                                                            "published_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-02-17T14:36:43"
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-02-18T16:30:47"
+                                                            },
+                                                            "updated_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-02-18T16:30:47"
+                                                            }
+                                                        },
+                                                        "type": "object"
                                                     }
                                                 },
-                                                "type": "object"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Unauthenticated."
+                                                "first_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8082/api/articles?page=1"
+                                                },
+                                                "last_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8082/api/articles?page=1"
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 4
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -101,12 +162,7 @@
                             }
                         }
                     }
-                },
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ]
+                }
             },
             "post": {
                 "tags": [
@@ -609,6 +665,149 @@
                 ]
             }
         },
+        "/api/scheduler": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Dispatch news fetching jobs",
+                "description": "Triggers jobs to fetch articles from various news sources.",
+                "operationId": "68844df9dfab876b1b8c8662b345c5bc",
+                "responses": {
+                    "200": {
+                        "description": "Job has been dispatched successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Job has been dispatched!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Something went wrong!"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/getpreferencesfields": {
+            "get": {
+                "tags": [
+                    "Articles"
+                ],
+                "summary": "Fetch distinct categories, sources, and authors",
+                "description": "Returns a list of distinct news categories, sources, and authors from the articles table.",
+                "operationId": "188fadca06e52c1cc4f3ae2ee1b8bfa2",
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "categories": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "example": [
+                                                "business",
+                                                "general",
+                                                "entertainment",
+                                                "technology",
+                                                "sports",
+                                                "science",
+                                                "health"
+                                            ]
+                                        },
+                                        "sources": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "example": [
+                                                "BBC News",
+                                                "CNN",
+                                                "The Wall Street Journal",
+                                                "TechCrunch"
+                                            ]
+                                        },
+                                        "authors": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "string"
+                                            },
+                                            "example": [
+                                                "John Doe",
+                                                "Jane Smith",
+                                                "Alice Brown"
+                                            ]
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Too many requests, please slow down."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/login": {
             "post": {
                 "tags": [
@@ -975,6 +1174,329 @@
                     }
                 ]
             }
+        },
+        "/api/saveuserpreferences": {
+            "post": {
+                "tags": [
+                    "User Preferences"
+                ],
+                "summary": "Save user news preferences",
+                "description": "Stores the user's preferred news category, source, and author.",
+                "operationId": "a9725241b8174b6176e7bb0821ebfb07",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "category": {
+                                        "type": "string",
+                                        "example": "business",
+                                        "nullable": true
+                                    },
+                                    "source": {
+                                        "type": "string",
+                                        "example": "CNN",
+                                        "nullable": true
+                                    },
+                                    "author": {
+                                        "type": "string",
+                                        "example": "John Doe",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "User preferences saved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "User preferences saved successfully!"
+                                        },
+                                        "preference": {
+                                            "properties": {
+                                                "user_id": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "category": {
+                                                    "type": "string",
+                                                    "example": "business"
+                                                },
+                                                "source": {
+                                                    "type": "string",
+                                                    "example": "CNN"
+                                                },
+                                                "author": {
+                                                    "type": "string",
+                                                    "example": "John Doe"
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-02-18T19:16:24.000000Z"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time",
+                                                    "example": "2025-02-18T19:16:24.000000Z"
+                                                },
+                                                "id": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "errors": {
+                                            "properties": {
+                                                "category": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "The category field must be a string."
+                                                    ]
+                                                },
+                                                "source": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "The source field must be a string."
+                                                    ]
+                                                },
+                                                "author": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "example": [
+                                                        "The author field must be a string."
+                                                    ]
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Too many requests, please slow down."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
+        "/api/getuserpreferencesnews": {
+            "get": {
+                "tags": [
+                    "User Preferences"
+                ],
+                "summary": "Get user preference-based news",
+                "description": "Fetches news articles based on the user's saved preferences (category, source, author). If no preferences are found, returns all news articles.",
+                "operationId": "a4d918695dfd58d722084b8787d61470",
+                "responses": {
+                    "200": {
+                        "description": "Preferred news articles retrieved successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Preferred news articles retrieved successfully!"
+                                        },
+                                        "articles": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "data": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "properties": {
+                                                            "id": {
+                                                                "type": "integer",
+                                                                "example": 1
+                                                            },
+                                                            "title": {
+                                                                "type": "string",
+                                                                "example": "State Department had a plan to buy $400M worth of armored Tesla vehicles"
+                                                            },
+                                                            "author": {
+                                                                "type": "string",
+                                                                "example": "mlive.com"
+                                                            },
+                                                            "source": {
+                                                                "type": "string",
+                                                                "example": "Biztoc.com"
+                                                            },
+                                                            "category": {
+                                                                "type": "string",
+                                                                "example": "business"
+                                                            },
+                                                            "description": {
+                                                                "type": "string",
+                                                                "example": "State Department was in talks with Tesla for armored EVs."
+                                                            },
+                                                            "url": {
+                                                                "type": "string",
+                                                                "format": "uri",
+                                                                "example": "https://example.com/article"
+                                                            },
+                                                            "published_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-02-17 18:37:00"
+                                                            },
+                                                            "created_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-02-18T17:13:08.000000Z"
+                                                            },
+                                                            "updated_at": {
+                                                                "type": "string",
+                                                                "format": "date-time",
+                                                                "example": "2025-02-18T17:13:08.000000Z"
+                                                            }
+                                                        },
+                                                        "type": "object"
+                                                    }
+                                                },
+                                                "first_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8082/api/getuserpreferencesnews?page=1"
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 2
+                                                },
+                                                "next_page_url": {
+                                                    "type": "string",
+                                                    "example": "http://localhost:8082/api/getuserpreferencesnews?page=2",
+                                                    "nullable": true
+                                                },
+                                                "prev_page_url": {
+                                                    "type": "string",
+                                                    "example": null,
+                                                    "nullable": true
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 10
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 20
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too many requests",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Too many requests, please slow down."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     },
     "tags": [
@@ -985,6 +1507,10 @@
         {
             "name": "Authentication",
             "description": "Authentication"
+        },
+        {
+            "name": "User Preferences",
+            "description": "User Preferences"
         }
     ]
 }
