@@ -27,10 +27,10 @@ Ensure you have the following installed:
 
     docker-compose up --build 
 
-#This will:
+#This will build the application container
 
-#Build the application container
 #Start the database, PHP, and Nginx services
+
 #Run the Laravel application in a container
 
 ###  Configure Environment Variables
@@ -60,7 +60,11 @@ Ensure you have the following installed:
 
 ###  I have implemented Laravel scheduled commands to regularly fetch and update articles from the chosen news APIs
 
-### After running the artisan command please run the queue starting commands.
+    1.NewsAPI.org
+    2.New York Times
+    3.The Guardian
+
+### After running the artisan command please run the queue starting commands for regularly fetch and store the articles in the local system.
 
        php artisan queue:restart # Run if needed to restart the queue.
        php artisan queue:work
@@ -87,12 +91,8 @@ Ensure you have the following installed:
 
 ### If any issues are facing like 403 forbidden or 504 gateway time out while running docker in your system, make sure your ngnix.conf file is pointing to the public folder of the project folder.
 
-### I have chosen 3 Data Sources among the sources you have provided.It is listed below:
-    # The Guardian
-    # New York Times
-    # NewsAPI.org
 
-📌 API Documentation
+### 📌 API Documentation
 
 ### Swagger UI
         #The API is documented using Swagger (OpenAPI). You can view the API documentation in your browser.

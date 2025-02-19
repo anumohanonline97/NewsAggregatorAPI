@@ -518,6 +518,31 @@ class ArticleController extends Controller
     //     return response()->json($newsData, 200);
     // }
 
+    /**
+ * @OA\Get(
+ *     path="/api/scheduler",
+ *     summary="Dispatch news fetching jobs",
+ *     description="Triggers jobs to fetch articles from various news sources.",
+ *     tags={"Articles"},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Job has been dispatched successfully",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="message", type="string", example="Job has been dispatched!")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=500,
+ *         description="Server error",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="message", type="string", example="Something went wrong!")
+ *         )
+ *     )
+ * )
+ */
+
     public function fetchArticles()
     {
         FetchArticlesFromNewsAPI::dispatch();
@@ -527,6 +552,42 @@ class ArticleController extends Controller
 
         return response()->json(['message' => 'Job has been dispatched!']);
     }
+
+    /**
+ * @OA\Get(
+ *     path="/api/getpreferencesfields",
+ *     summary="Fetch distinct categories, sources, and authors",
+ *     description="Returns a list of distinct news categories, sources, and authors from the articles table.",
+ *     tags={"Articles"},
+ *     security={{ "sanctum": {} }},
+ *     @OA\Response(
+ *         response=200,
+ *         description="Successful response",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="categories", type="array", @OA\Items(type="string"), example={"business", "general", "entertainment", "technology", "sports", "science", "health"}),
+ *             @OA\Property(property="sources", type="array", @OA\Items(type="string"), example={"BBC News", "CNN", "The Wall Street Journal", "TechCrunch"}),
+ *             @OA\Property(property="authors", type="array", @OA\Items(type="string"), example={"John Doe", "Jane Smith", "Alice Brown"})
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="message", type="string", example="Unauthenticated.")
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=429,
+ *         description="Too many requests",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(property="message", type="string", example="Too many requests, please slow down.")
+ *         )
+ *     )
+ * )
+ */
 
     public function getDistinctCategoriesSourcesAuthors()
     {
