@@ -64,6 +64,7 @@ class ArticleController extends Controller
             'title' => 'required|string',
             'author' => 'required|string',
             'source' => 'required|string',
+            'category' => 'required|string',
             'description' => 'required|string',
             'url' => 'required|string',
             'published_at' => 'required|date', 
@@ -166,6 +167,7 @@ class ArticleController extends Controller
             'title' => 'required|string',
             'author' => 'required|string',
             'source' => 'required|string',
+            'category' => 'required|string',
             'description' => 'required|string',
             'url' => 'required|string',
             'published_at' => 'required|date', 
@@ -200,23 +202,20 @@ class ArticleController extends Controller
 /**
      * @OA\Get(
      *     path="/api/articles",
-     *     summary="Get list of articles",
-     *     description="Fetches a list of articles with optional filters for search, date, and source.",
+     *     summary="List articles",
+     *     description="Retrieve a paginated list of articles with optional filters",
      *     tags={"Articles"},
-     *     security={{
-     *         "sanctum": {}
-     *     }},
      *     @OA\Parameter(
      *         name="search",
      *         in="query",
-     *         description="Search term to filter articles by title or description",
+     *         description="Search keyword for title or description",
      *         required=false,
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
      *         name="date",
      *         in="query",
-     *         description="Date to filter articles by publication date",
+     *         description="Filter articles by published date (YYYY-MM-DD)",
      *         required=false,
      *         @OA\Schema(type="string", format="date")
      *     ),
@@ -228,9 +227,16 @@ class ArticleController extends Controller
      *         @OA\Schema(type="string")
      *     ),
      *     @OA\Parameter(
+     *         name="category",
+     *         in="query",
+     *         description="Filter articles by category",
+     *         required=false,
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
      *         name="per_page",
      *         in="query",
-     *         description="Number of articles per page",
+     *         description="Number of articles per page (default: 10)",
      *         required=false,
      *         @OA\Schema(type="integer", default=10)
      *     ),
@@ -238,41 +244,33 @@ class ArticleController extends Controller
      *         response=200,
      *         description="List of articles",
      *         @OA\JsonContent(
-     *             type="object",
      *             @OA\Property(property="message", type="string", example="Articles listed successfully!"),
      *             @OA\Property(
      *                 property="articles",
      *                 type="object",
-     *                 @OA\Property(property="current_page", type="integer"),
-     *                 @OA\Property(property="data", type="array", @OA\Items(
-     *                     type="object",
-     *                     @OA\Property(property="id", type="integer"),
-     *                     @OA\Property(property="title", type="string"),
-     *                     @OA\Property(property="author", type="string"),
-     *                     @OA\Property(property="source", type="string"),
-     *                     @OA\Property(property="category", type="string"),
-     *                     @OA\Property(property="description", type="string"),
-     *                     @OA\Property(property="url", type="string"),
-     *                     @OA\Property(property="published_at", type="string", format="date-time"),
-     *                     @OA\Property(property="created_at", type="string", format="date-time"),
-     *                     @OA\Property(property="updated_at", type="string", format="date-time")
-     *                 )),
-     *                 @OA\Property(property="first_page_url", type="string"),
-     *                 @OA\Property(property="last_page_url", type="string"),
-     *                 @OA\Property(property="next_page_url", type="string"),
-     *                 @OA\Property(property="prev_page_url", type="string"),
-     *                 @OA\Property(property="per_page", type="integer"),
-     *                 @OA\Property(property="total", type="integer")
+     *                 @OA\Property(property="current_page", type="integer", example=1),
+     *                 @OA\Property(
+     *                     property="data",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         @OA\Property(property="id", type="integer", example=1),
+     *                         @OA\Property(property="title", type="string", example="Tesla stock finds support"),
+     *                         @OA\Property(property="author", type="string", example="aol.com"),
+     *                         @OA\Property(property="source", type="string", example="Biztoc.com"),
+     *                         @OA\Property(property="category", type="string", example="business"),
+     *                         @OA\Property(property="description", type="string", example="Tesla's stock is rebounding after a tough stretch."),
+     *                         @OA\Property(property="url", type="string", example="https://example.com"),
+     *                         @OA\Property(property="published_at", type="string", format="date-time", example="2025-02-17T14:36:43"),
+     *                         @OA\Property(property="created_at", type="string", format="date-time", example="2025-02-18T16:30:47"),
+     *                         @OA\Property(property="updated_at", type="string", format="date-time", example="2025-02-18T16:30:47")
+     *                     )
+     *                 ),
+     *                 @OA\Property(property="first_page_url", type="string", example="http://localhost:8082/api/articles?page=1"),
+     *                 @OA\Property(property="last_page_url", type="string", example="http://localhost:8082/api/articles?page=1"),
+     *                 @OA\Property(property="per_page", type="integer", example=10),
+     *                 @OA\Property(property="total", type="integer", example=4)
      *             )
      *         )
-     *     ),
-     *     @OA\Response(
-     *         response=400,
-     *         description="Bad Request"
-     *     ),
-     *     @OA\Response(
-     *         response=500,
-     *         description="Internal Server Error"
      *     )
      * )
      */
@@ -281,6 +279,7 @@ class ArticleController extends Controller
      $search = request()->query('search', null);
      $date = request()->query('date', null);
      $source = request()->query('source', null);
+     $category = request()->query('category', null);
      $perPage = request()->query('per_page', 10);
  
      $query = Article::query();
@@ -293,7 +292,11 @@ class ArticleController extends Controller
      }
      
      if (!empty($source)) {
-        $query->whereDate('source', 'like', "%{$source}%");
+        $query->orWhere('source', 'like', "%{$source}%");
+     }
+
+     if (!empty($category)) {
+        $query->orWhere('category', 'like', "%{$category}%");
      }
  
      if (!empty($date)) {
